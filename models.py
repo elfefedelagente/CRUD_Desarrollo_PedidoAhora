@@ -52,8 +52,19 @@ class BaseModel(Base):
             .where(self.__class__.id == primary_key)
             .values(**kwargs)
         )
-        await db.execute(stmt)
-        return await self.save(db)
+        try:
+            await db.execute(stmt)
+            # Confirmar la transacción
+            await db.commit()
+            # Opcional: Volver a cargar el objeto actualizado
+            updated_stmt = select(self.__class__).where(self.__class__.id == primary_key)
+            result = await db.execute(updated_stmt)
+            updated_instance = result.scalar_one_or_none()
+            return updated_instance
+        except Exception as e:
+            # Deshacer cambios si hay un error
+            await db.rollback()
+            raise e
     
     @classmethod
     async def create(cls, db: AsyncSession, commit: bool = True, **kwargs):

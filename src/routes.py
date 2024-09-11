@@ -20,4 +20,12 @@ async def read_producto(producto_id: int, db:AsyncSession = Depends(get_db)):
     except HTTPException as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.put("/producto/{producto_id}", response_model=schemas.Producto)
+async def update_producto(producto_id: int, producto:schemas.ProductoUpdate, db:AsyncSession=Depends(get_db)):
+        try: 
+            return await services.modificar_producto(db, producto_id, producto)
+        except HTTPException as e:
+            raise HTTPException(status_code=400, detail=str(e))
+  
+    
     

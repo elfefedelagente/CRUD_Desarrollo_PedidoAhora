@@ -24,13 +24,11 @@ async def crear_producto(db: AsyncSession, producto:schemas.ProductoCreate) -> s
     )
     try:
             db.add(new_producto)
-            await db.commit()  # Hacer commit de la transacción
-            await db.refresh(new_producto)  # Refrescar la instancia dentro de la misma transacción
+            await db.commit()  
+            await db.refresh(new_producto)
     except Exception as e:
-            await db.rollback()  # Hacer rollback en caso de error
+            await db.rollback()  
             raise HTTPException(status_code=400, detail="Error al crear producto") from e
-        
-        # Retorna el producto creado
     return new_producto
 
 
@@ -39,5 +37,18 @@ async def leer_producto(db:AsyncSession, producto_id:int) -> schemas.Producto:
         result = await db.execute(select(Producto).filter(Producto.id == producto_id))
         db_producto = result.scalar_one_or_none()
         if db_producto is None:
-            raise print("persona no existe")
+              raise HTTPException(status_code=404, detail="Producto no encontrado")
         return db_producto
+
+async def modificar_producto(db: AsyncSession, producto_id: int, producto:schemas.ProductoUpdate) -> schemas.ProductoUpdate:
+    
+    db_producto = await leer_producto(db, producto_id)
+    
+    if db_producto:
+        db_producto.nombre = producto.nombre
+        db_producto.precio = producto.precio
+        db_producto.descripcion = producto.descripcion
+        await db.commit()
+    
+        return db_producto
+        

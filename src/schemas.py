@@ -23,7 +23,12 @@ class Producto(ProductoBase):
 class ProductoCreate(ProductoBase):
     pass
 
-
+class ProductoUpdate(ProductoBase):
+    nombre: Optional[str] = None
+    precio: Optional[float] = None
+    descripcion: Optional[str] = None
+    fecha_modificacion: Optional[datetime.datetime] = None
+    
 
 #ProductoOut()
 '''
