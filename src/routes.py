@@ -27,5 +27,11 @@ async def update_producto(producto_id: int, producto:schemas.ProductoUpdate, db:
         except HTTPException as e:
             raise HTTPException(status_code=400, detail=str(e))
   
+@router.delete("/producto/{producto_id}", response_model=dict)
+async def delete_producto(producto_id: int, db: AsyncSession = Depends(get_db)):
+    try:
+        return await services.eliminar_producto(db, producto_id)
+    except HTTPException as e:
+            raise HTTPException(status_code=400, detail=str(e))
     
     

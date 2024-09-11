@@ -31,7 +31,6 @@ async def crear_producto(db: AsyncSession, producto:schemas.ProductoCreate) -> s
             raise HTTPException(status_code=400, detail="Error al crear producto") from e
     return new_producto
 
-
 async def leer_producto(db:AsyncSession, producto_id:int) -> schemas.Producto:
      async with db.begin():
         result = await db.execute(select(Producto).filter(Producto.id == producto_id))
@@ -52,3 +51,14 @@ async def modificar_producto(db: AsyncSession, producto_id: int, producto:schema
     
         return db_producto
         
+async def eliminar_producto(db:AsyncSession, producto_id:int) -> schemas.ProductoDelete:
+    
+    db_producto = await leer_producto(db, producto_id)
+    if db_producto:
+        await db.delete(db_producto)
+        await db.commit()
+        return {"detail": "Producto eliminado"} 
+    else:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    

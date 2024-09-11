@@ -28,6 +28,9 @@ class ProductoUpdate(ProductoBase):
     precio: Optional[float] = None
     descripcion: Optional[str] = None
     fecha_modificacion: Optional[datetime.datetime] = None
+
+class ProductoDelete(ProductoBase):
+     detail: str  
     
 
 #ProductoOut()
