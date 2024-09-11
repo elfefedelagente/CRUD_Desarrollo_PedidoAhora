@@ -12,3 +12,12 @@ async def create_producto(producto: schemas.ProductoCreate, db: AsyncSession = D
         return await services.crear_producto(db, producto)
     except HTTPException as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/producto/{producto_id}", response_model=schemas.Producto)
+async def read_producto(producto_id: int, db:AsyncSession = Depends(get_db)):
+    try: 
+        return await services.leer_producto(db, producto_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    

@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
+from sqlalchemy.future import select
 from src import schemas, models
+from src.models import Producto
+from fastapi import HTTPException
 from database import SessionLocal
 
 
@@ -12,6 +14,7 @@ async def get_db():
         db.close()
 
 ############################################################  CRUD PRODUCTO ############################################################
+#Controlar las transacciones
 
 async def crear_producto(db: AsyncSession, producto:schemas.ProductoCreate) -> schemas.ProductoCreate:
     new_producto = models.Producto(
@@ -30,3 +33,11 @@ async def crear_producto(db: AsyncSession, producto:schemas.ProductoCreate) -> s
         # Retorna el producto creado
     return new_producto
 
+
+async def leer_producto(db:AsyncSession, producto_id:int) -> schemas.Producto:
+     async with db.begin():
+        result = await db.execute(select(Producto).filter(Producto.id == producto_id))
+        db_producto = result.scalar_one_or_none()
+        if db_producto is None:
+            raise print("persona no existe")
+        return db_producto
